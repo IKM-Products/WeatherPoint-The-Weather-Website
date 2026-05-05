@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>the.weather</title>
+    <!-- We'll use a Font Awesome library for the search icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="weather-container">
+        
+        <!-- --- Left Side (Hero Panel) --- -->
+        <div class="hero-panel" id="heroPanel">
+            <span class="logo">WeatherPoint</span>
+            
+            <div class="weather-brief">
+                <h1 class="main-temp" id="mainTemp">--°</h1>
+                
+                <div class="meta-info">
+                    <h2 id="cityName">Searching...</h2>
+                    <p id="localTime">00:00 - Monday, 01 Jan '00</p>
+                </div>
+                
+                <div class="condition">
+                    <i class="weather-icon" id="mainIcon"></i>
+                    <p id="mainCondition">Fetching...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Right Side (Side Panel) --- -->
+        <div class="side-panel">
+            
+            <!-- Search & Location Suggestions -->
+            <div class="section-top">
+                <div class="search-box">
+                    <input type="text" id="cityInput" placeholder="Another location">
+                    <button id="searchBtn">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="location-links">
+                    <p>Birmingham</p>
+                    <p>Manchester</p>
+                    <p>New York</p>
+                    <p>California</p>
+                </div>
+            </div>
+
+            <!-- Horizontal Line Separator -->
+            <hr>
+
+            <!-- Weather Details Breakdown -->
+            <div class="section-bottom">
+                <h3>Weather Details</h3>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span>Cloudy</span>
+                        <span id="detailCloud">--%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Humidity</span>
+                        <span id="detailHumid">--%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Wind</span>
+                        <span id="detailWind">--km/h</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Rain</span>
+                        <span id="detailRain">--mm</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
