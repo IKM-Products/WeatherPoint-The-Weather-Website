@@ -1,5 +1,5 @@
-<img width="1920" height="923" alt="Screenshot (203)" src="https://github.com/user-attachments/assets/ef55a7ce-0e22-4691-bb2d-ceae196997bc" />
 # 🌦️ WeatherPoint: The Weather Website
+<img width="1920" height="923" alt="Screenshot (203)" src="https://github.com/user-attachments/assets/ef55a7ce-0e22-4691-bb2d-ceae196997bc" />
 
 **WeatherPoint** is a simple and user-friendly weather web application that provides real-time weather information based on user location or searched cities. Built using modern web technologies and powered by the Open-Meteo API, the website delivers accurate weather updates in a clean and minimal interface.
 
