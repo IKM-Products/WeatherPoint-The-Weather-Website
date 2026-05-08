@@ -1,108 +1,122 @@
-// A mapping from Open-Meteo codes to readable text and Font Awesome icons
-const weatherConditions = {
-    0: { text: 'Clear Sky', icon: 'fa-sun' },
-    1: { text: 'Mainly Clear', icon: 'fa-cloud-sun' },
-    2: { text: 'Partly Cloudy', icon: 'fa-cloud' },
-    3: { text: 'Overcast', icon: 'fa-cloud' },
-    45: { text: 'Fog', icon: 'fa-smog' },
-    61: { text: 'Slight Rain', icon: 'fa-cloud-showers-heavy' },
-    80: { text: 'Showers', icon: 'fa-cloud-rain' },
-};
-
-// Map the numeric day (0-6) to day names
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-// Elements we need to update
-const heroPanelEl = document.getElementById('heroPanel');
-const mainTempEl = document.getElementById('mainTemp');
+const tempEl = document.getElementById('temp');
 const cityNameEl = document.getElementById('cityName');
-const localTimeEl = document.getElementById('localTime');
-const mainConditionEl = document.getElementById('mainCondition');
-const mainIconEl = document.getElementById('mainIcon');
-const cloudDetailEl = document.getElementById('detailCloud');
-const humidDetailEl = document.getElementById('detailHumid');
-const windDetailEl = document.getElementById('detailWind');
-const rainDetailEl = document.getElementById('detailRain');
-const searchInputEl = document.getElementById('cityInput');
+const conditionEl = document.getElementById('mainCondition');
+const humidEl = document.getElementById('detailHumid');
+const windEl = document.getElementById('detailWind');
+const iconContainer = document.getElementById('weatherIcon');
+const searchInput = document.getElementById('cityInput');
 
-// 1. Initial State: Load London on startup
-async function initiateApp() {
-    await searchCity("London");
-}
+// Selectors for the time and day display in the footer
+const timeEl = document.getElementById('current-time');
+const fullDateEl = document.getElementById('current-day-date');
 
-async function searchCity(city) {
-    if (!city) return alert("Please enter a city name");
+let timerInterval;
 
-    const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
+/**
+ * Updates the clock and date based on the searched city's UTC offset
+ */
+function updateDateTime(utcOffsetSeconds) {
+    const now = new Date();
+    // Convert local system time to UTC, then add the city's specific offset
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const localTime = new Date(utc + (utcOffsetSeconds * 1000));
     
+    // Formatting the Time (HH:MM)
+    const hours = String(localTime.getHours()).padStart(2, '0');
+    const minutes = String(localTime.getMinutes()).padStart(2, '0');
+    timeEl.innerText = `${hours}:${minutes}`;
+    
+    // Formatting Day and Date (e.g., Friday, 08 May 2026)
+    const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
+    fullDateEl.innerText = localTime.toLocaleDateString('en-GB', options);
+}
+
+/**
+ * Handles icon switching and status text based on WMO codes
+ */
+function updateWeatherUI(code, isDay) {
+    let iconClass = "fa-sun";
+    let statusText = "Clear Sky";
+
+    // UPDATED LOGIC: Code 0, 1, and 2 are now all "Clear Sky" 
+    // This fixes the "minor error" where slightly cloudy days felt too gloomy.
+    if (code >= 0 && code <= 2) {
+        iconClass = isDay ? "fa-sun" : "fa-moon";
+        statusText = "Clear Sky";
+    } 
+    // Only Code 3 is treated as "Partly Cloudy"
+    else if (code === 3) {
+        iconClass = isDay ? "fa-cloud-sun" : "fa-cloud-moon";
+        statusText = "Partly Cloudy";
+    } 
+    else if (code === 45 || code === 48) {
+        iconClass = "fa-smog";
+        statusText = "Foggy";
+    } 
+    else if (code >= 51 && code <= 67) {
+        iconClass = "fa-cloud-showers-heavy";
+        statusText = "Rainy";
+    } 
+    else if (code >= 71 && code <= 77) {
+        iconClass = "fa-snowflake";
+        statusText = "Snowy";
+    } 
+    else if (code >= 95) {
+        iconClass = "fa-cloud-bolt";
+        statusText = "Thunderstorm";
+    } 
+    else {
+        iconClass = "fa-cloud";
+        statusText = "Overcast";
+    }
+    
+    iconContainer.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+    conditionEl.innerText = statusText;
+}
+
+/**
+ * Fetches Geo coordinates and then Weather data
+ */
+async function searchCity(city) {
+    if (!city) return;
     try {
-        const geoRes = await fetch(geoUrl);
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
         const geoData = await geoRes.json();
+        if (!geoData.results) return;
+
+        const { latitude, longitude, name } = geoData.results[0];
         
-        if (!geoData.results || geoData.results.length === 0) throw new Error("City not found");
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day&timezone=auto`);
+        const weatherData = await weatherRes.json();
+
+        // Update Weather Info
+        tempEl.innerText = `${Math.round(weatherData.current.temperature_2m)}°`;
+        cityNameEl.innerText = name;
+        humidEl.innerText = `${weatherData.current.relative_humidity_2m}%`;
+        windEl.innerText = `${Math.round(weatherData.current.wind_speed_10m)}km/h`;
         
-        const { latitude, longitude, name, country } = geoData.results[0];
-        const displayCity = `${name}, ${country}`;
+        updateWeatherUI(weatherData.current.weather_code, weatherData.current.is_day);
+
+        // Reset and Start the local clock for the new city
+        if (timerInterval) clearInterval(timerInterval);
         
-        fetchWeather(latitude, longitude, displayCity);
-    } catch (err) {
-        alert(err.message);
+        updateDateTime(weatherData.utc_offset_seconds);
+        timerInterval = setInterval(() => {
+            updateDateTime(weatherData.utc_offset_seconds);
+        }, 1000);
+        
+    } catch (err) { 
+        console.error("Weather Fetch Error:", err); 
     }
 }
 
-async function fetchWeather(lat, lon, cityName) {
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,precipitation,cloud_cover&timezone=auto`;
-
-    try {
-        const response = await fetch(weatherUrl);
-        const data = await response.json();
-
-        const current = data.current;
-        const condition = weatherConditions[current.weather_code] || { text: 'Unknown', icon: 'fa-question' };
-
-        // --- UPDATE THE BACKGROUND STATE ---
-        heroPanelEl.classList.remove('clear', 'cloud', 'rain', 'snow');
-
-        if (current.weather_code === 0 || current.weather_code === 1) {
-            heroPanelEl.classList.add('clear');
-        } else if (current.weather_code >= 2 && current.weather_code <= 3) {
-            heroPanelEl.classList.add('cloud');
-        } else if (current.weather_code >= 61) {
-            heroPanelEl.classList.add('rain');
-        }
-
-        // --- UPDATE THE UI ---
-        cityNameEl.innerText = cityName;
-        mainTempEl.innerText = `${Math.round(current.temperature_2m)}°`;
-        mainConditionEl.innerText = condition.text;
-        mainIconEl.className = `weather-icon fa-solid ${condition.icon}`;
-
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        const dayStr = dayNames[now.getDay()];
-        const dateStr = now.toLocaleDateString([], { day: '2-digit', month: 'short' });
-        const yearStr = now.toLocaleDateString([], { year: '2-digit' });
-        localTimeEl.innerText = `${timeStr} - ${dayStr}, ${dateStr} '${yearStr}`;
-
-        cloudDetailEl.innerText = `${current.cloud_cover}%`;
-        humidDetailEl.innerText = `${current.relative_humidity_2m}%`;
-        windDetailEl.innerText = `${Math.round(current.wind_speed_10m)}km/h`;
-        rainDetailEl.innerText = `${current.precipitation}mm`;
-
-    } catch (err) {
-        console.error("Error fetching weather:", err);
-    }
-}
-
-// Event Listeners
-document.getElementById('searchBtn').addEventListener('click', () => {
-    searchCity(searchInputEl.value);
-});
-
-searchInputEl.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        searchCity(searchInputEl.value);
+// Event Listener for Search
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') { 
+        searchCity(searchInput.value); 
+        searchInput.value = ""; 
     }
 });
 
-initiateApp();
+// Initial Load
+searchCity("Kathmandu");
