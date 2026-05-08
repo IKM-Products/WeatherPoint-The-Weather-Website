@@ -5,21 +5,13 @@
 
 ## 🚀 Features
 
-* 🌍 **Real-Time Weather Data**
-  Fetches live weather information including:
+* 🌍 **Real-Time Weather Data** - Fetches live weather information including: Temperature, Humidity & Wind Speed
 
-  * Temperature
-  * Humidity
-  * Wind Speed
+* 🔎 **City-Based Search** - Users can search for weather conditions in any city worldwide.
 
-* 🔎 **City-Based Search**
-  Users can search for weather conditions in any city worldwide.
+* 🧾 **Clean & Simple UI** - Minimal and responsive design for easy usability.
 
-* 🧾 **Clean & Simple UI**
-  Minimal and responsive design for easy usability.
-
-* ⚡ **Fast & Lightweight**
-  Optimized for quick loading and smooth performance.
+* ⚡ **Fast & Lightweight** - Optimized for quick loading and smooth performance.
 
 ## 🛠️ Technologies Used
 
