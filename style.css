@@ -79,6 +79,7 @@ header {
 
 .search-bar i {
     margin-right: 10px;
+    flex-shrink: 0;
 }
 
 .search-bar:focus-within {
@@ -93,6 +94,7 @@ header {
     color: #ffffff;
     outline: none;
     width: 100%;
+    min-width: 0;
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
 }
@@ -128,11 +130,16 @@ header {
     align-items: center;
     justify-content: center;
     padding-left: 20px;
+    padding-top: 10px;
     height: 100%;
 }
 
 .condition-icon {
     font-size: 4.5rem;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 5px;
     color: #ddb892;
 }
@@ -141,8 +148,8 @@ header {
     font-family: 'Quicksand', sans-serif;
     font-size: 5.5rem; 
     font-weight: 500; 
-    line-height: 1; 
-    margin-bottom: 10px;
+    line-height: 1.15; 
+    margin-bottom: 5px;
     color: #ffffff;
 }
 

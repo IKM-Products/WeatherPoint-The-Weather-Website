@@ -33,12 +33,11 @@ function updateWeatherUI(code, isDay) {
     let iconClass = "fa-sun";
     let statusText = "Clear Sky";
 
-    if (code >= 0 && code <= 2) {
+    if (code === 0) {
         iconClass = isDay ? "fa-sun" : "fa-moon";
         statusText = "Clear Sky";
     } 
-
-    else if (code === 3) {
+    else if (code >= 1 && code <= 3) {
         iconClass = isDay ? "fa-cloud-sun" : "fa-cloud-moon";
         statusText = "Partly Cloudy";
     } 
@@ -46,7 +45,7 @@ function updateWeatherUI(code, isDay) {
         iconClass = "fa-smog";
         statusText = "Foggy";
     } 
-    else if (code >= 51 && code <= 67) {
+    else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
         iconClass = "fa-cloud-showers-heavy";
         statusText = "Rainy";
     } 
