@@ -1,8 +1,8 @@
-# 🌦️ WeatherPoint: The Weather Website
+# 🌦️ WeatherPoint: The Weather Dashboard
 <img width="1920" height="918" alt="Interface" src="https://github.com/user-attachments/assets/0d3aabc4-b593-4794-adde-3c97121ffb12" />
 
 
-**WeatherPoint** is a simple and user-friendly weather web application that provides real-time weather information based on user location or searched cities. It is built using modern web technologies and powered by the Open-Meteo API.
+**WeatherPoint** is a simple and user-friendly weather dashboard that provides real-time weather information based on user location or searched cities. It is built using modern web technologies and powered by the Open-Meteo API.
 
 ## 🚀 Features
 
@@ -22,7 +22,7 @@
 
 ## 📱 How It Works
 
-1. User opens the website.
+1. User opens the dashboard.
 2. The app fetches weather data using Open-Meteo API.
 3. User can search for a city manually.
 4. Weather details are displayed instantly on the screen.
